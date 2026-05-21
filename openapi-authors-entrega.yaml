@@ -1,0 +1,210 @@
+openapi: 3.0.1
+info:
+  title: API de Autores
+  description: API para realizar operaciones CRUD sobre el modelo Author.
+  contact:
+    name: Soporte Biblioteca API
+    url: https://example.com/support
+    email: soporte@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+  - url: /
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        age:
+          type: integer
+        isActive:
+          type: boolean
+        birthDate:
+          type: string
+          format: date-time
+        genre:
+          type: string
+          enum:
+            - Ficción
+            - No Ficción
+            - Poesía
+            - Drama
+    AuthorInput:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        age:
+          type: integer
+        isActive:
+          type: boolean
+        birthDate:
+          type: string
+          format: date-time
+        genre:
+          type: string
+          enum:
+            - Ficción
+            - No Ficción
+            - Poesía
+            - Drama
+      required:
+        - name
+        - age
+        - birthDate
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+paths:
+  /api/authors:
+    get:
+      summary: Listar autores
+      description: Obtiene todos los autores registrados.
+      responses:
+        '200':
+          description: Lista de autores obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Crear autor
+      description: Crea un nuevo autor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '201':
+          description: Autor creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Datos incorrectos o incompletos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/authors/{id}:
+    get:
+      summary: Obtener autor por ID
+      description: Devuelve un autor usando su identificador.
+      parameters:
+        - name: id
+          in: path
+          description: ID del autor
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Autor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: Autor no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Actualizar autor
+      description: Actualiza un autor existente por ID.
+      parameters:
+        - name: id
+          in: path
+          description: ID del autor a actualizar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorInput'
+      responses:
+        '200':
+          description: Autor actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Datos incorrectos o incompletos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Autor no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Eliminar autor
+      description: Elimina un autor por ID.
+      parameters:
+        - name: id
+          in: path
+          description: ID del autor a eliminar
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Autor eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  author:
+                    $ref: '#/components/schemas/Author'
+        '404':
+          description: Autor no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
